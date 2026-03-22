@@ -5,4 +5,4 @@
   - if you stuck in my repo -> open the book's chapter that related to the repo file then read it + if you still stuck ask AI
   - feel free to ask me on my linkdin about anything: https://www.linkedin.com/in/abdulrahman-qasim-19b6b028b/
   - don't give up
-  - 
+
