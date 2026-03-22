@@ -205,4 +205,52 @@ while hard indicate to the hard disk so when removing the original file => hard 
 <img width="657" height="252" alt="image" src="https://github.com/user-attachments/assets/7c88d1ce-18ca-4015-83b4-7721f0dfe79e" />
 
 ----
+Making Archive(compression)
+	-if you want to create any archive that contain a bunch of files in it.
+	
+<img width="951" height="683" alt="image" src="https://github.com/user-attachments/assets/80b94d9c-7083-49ff-a3de-3fbbbd5c6626" />
 
+<img width="886" height="846" alt="image" src="https://github.com/user-attachments/assets/39cbad9e-b66f-42a1-9db0-458c0e47b0bc" />
+
+---
+Compressing an archive + decompress it 
+<img width="934" height="500" alt="image" src="https://github.com/user-attachments/assets/84036358-b65d-45c2-a84f-9bc2e3b88876" />
+
+<img width="882" height="138" alt="image" src="https://github.com/user-attachments/assets/ed32e695-4e34-4475-a072-19e0fde7047b" />
+
+-----
+Filesystem hierarchy standard:
+	- <img width="730" height="274" alt="image" src="https://github.com/user-attachments/assets/dad85aae-d670-4296-b938-8f862853a707" />
+		-/bin -> this dir contain binary info about the programs that is running on the system
+		- /dev => device files
+		- /etc -> user password,network stuff ..
+		- /home => directories of the users
+		- /lib -> contain libraries files that executables can use
+		- /proc -> contain some system statistics + info about cpus...
+		- /run -> contain process IDs,runtime of the system,socket files
+		-/sys => like /proc dir 
+		-/sbin => system executables that is run by the root on / directory
+		-/tmp => storage area for unnecessary files usually these files are removed when the system reboot or whatever .
+		-/usr -> pronounced user directory contain a bulk of directories like those in root dir
+		-/var -> contain system logging,user traking..
+		-/boot -> contain kernal boot loader files.
+		-/media => dir that contain removable flash files .
+		-/opt -> contain additional third party software.
+		-inside usr there is /include dir => include header files that are use by c compiler
+		-/local -> directory you can install your software there.
+		-/man -> manual pages of the system
+		-/share => contain files that should works on other unix machines.
+		- /boot => this dir contain all the stuff about the kernal boot loader.
+
+---
+If you want to grant the user all the privileges that root has;
+	- go to vim /etc/sudoers
+	- then write these lines;
+		User_Alias ADMINS = user1, user2
+		ADMINS ALL = NOPASSWD: ALL
+		root ALL=(ALL) ALL
+	- or add the user to the wheel group
+		sudo usermod -aG wheel username
+- but my recommendation -> don't do this step if you a beginner in linux world as this may make mistakes for you as no restriction when you do false changes or whatever.
+
+Alhamdullah on every thing.
