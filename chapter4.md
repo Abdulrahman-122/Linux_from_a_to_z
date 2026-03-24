@@ -9,7 +9,7 @@
       - <img width="951" height="457" alt="image" src="https://github.com/user-attachments/assets/1b7813be-b8de-495f-99e3-66981d68d575" />
 
 -----
-What is  the contents MBR?
+What are the contents of MBR?
   - contain ; primary,extended(logical) partition types
     - primary contain 4 partitiions
     - if partition > 4 use extended then  broke it into logical paritions.
@@ -76,7 +76,7 @@ notes;
   -  then do this ;
     -  mount UUID=b600fe63-d2e9-461c-a5cd-d3b373a5e1d2 /home/extra
 
-- notes;
+  # notes;
   - kernel read data from the cache  to ensure fast access
   - and cache read data from the RAM
   - if the data isn't in RAM -> RAM read from disk by creating a frames  into it and store data from disk to the RAM
@@ -89,7 +89,359 @@ notes;
    - you can see more  info about the filesystem from;///etc/fstab file;
        - you can see more info about filesystem by writing; df
          <img width="1583" height="447" alt="image" src="https://github.com/user-attachments/assets/509c4a01-aac6-487d-8742-1c45c693a2fe" />
-       -  
+------
+Great, this is one of the most **important practical parts of Linux system administration**. I’ll break it down into **clear concepts + real commands you can use on Arch Linux**.
+
+---
+
+#  1. Why filesystem checking matters
+
+Linux filesystems (like ext4) are basically **databases**.
+If something goes wrong (power loss, crash), the “database” can become inconsistent.
+
+### Common causes of corruption:
+
+* Sudden shutdown (pulling power)
+* Kernel crash
+* Disk / SSD problems
+* Bad cables or hardware issues
+
+ Result:
+
+* Missing files
+* Broken directories
+* System may not boot
+
+---
+
+# 2. `fsck` — the filesystem repair tool
+
+##  What it does
+
+`fsck` = **File System Check**
+
+It:
+
+* Scans filesystem structure
+* Fixes inconsistencies
+* Recovers lost files
+
+---
+
+##  VERY IMPORTANT RULE
+ **NEVER run fsck on a mounted filesystem**
+
+ Why?
+Because:
+
+* Kernel is still writing to disk
+* You’ll create **more corruption**
+
+---
+
+##  Basic usage
+
+```bash
+sudo fsck /dev/sdb1
+```
+
+OR using mount point:
+
+```bash
+sudo fsck /home
+```
+
+---
+
+##  What happens internally
+
+It runs 5 passes:
+
+1. Check inodes
+2. Check directories
+3. Check connectivity
+4. Check reference counts
+5. Check summary info
+
+---
+
+##  If errors are found
+
+It may ask:
+
+* Fix inode?
+* Reconnect file?
+
+If a file is “lost”:
+ It goes to:
+
+```bash
+lost+found/
+```
+
+You must manually inspect it.
+
+---
+
+#  3. Automatic repair mode
+
+Instead of answering many questions:
+
+```bash
+sudo fsck -p /dev/sdb1
+```
+
+OR:
+
+```bash
+sudo fsck -y /dev/sdb1
+```
+
+### Difference:
+
+* `-p` → safe auto-fix
+* `-y` → answer YES to everything ( dangerous)
+
+---
+
+#  4. Safe checking (no changes)
+
+```bash
+sudo fsck -n /dev/sdb1
+```
+
+✔️ This only **checks**, does NOT modify
+
+ Use this if:
+
+* You suspect hardware issues
+* You’re unsure
+
+---
+
+#  5. Superblock recovery (advanced)
+
+Superblock = **filesystem metadata core**
+
+If it's corrupted:
+
+```bash
+sudo fsck -b 32768 /dev/sdb1
+```
+
+ But first find backup superblocks:
+
+```bash
+sudo mkfs.ext4 -n /dev/sdb1
+```
+
+ The `-n` is critical → prevents formatting
+
+---
+
+#  6. ext3/ext4 journaling
+
+Modern filesystems use a **journal**:
+
+ Think of it like a “log of pending changes”
+
+So after a crash:
+
+* System replays journal
+* Fixes most issues automatically
+
+---
+
+## Manual journal flush
+
+```bash
+sudo e2fsck -fy /dev/sdb1
+```
+
+---
+
+#  7. Worst-case recovery options
+
+If disk is badly damaged:
+
+### Option 1: Clone disk
+
+```bash
+dd if=/dev/sda of=/dev/sdb
+```
+
+---
+
+### Option 2: Mount read-only
+
+```bash
+mount -o ro /dev/sda1 /mnt
+```
+
+---
+
+### Option 3: Use debug tool
+
+```bash
+debugfs /dev/sda1
+```
+
+---
+
+### Option 4: Professional recovery
+
+ When hardware is physically damaged
+
+---
+
+#  8. Special Linux filesystems (IMPORTANT)
+
+These are NOT real disk storage.
+
+---
+
+##  `/proc`
+
+* Represents running processes
+* Example:
+
+```bash
+cat /proc/cpuinfo
+```
+
+---
+
+##  `/sys`
+
+* Kernel + hardware interface
+
+---
+
+##  `tmpfs`
+
+* Stored in RAM
+* Temporary
+
+Example mount:
+
+```bash
+mount -t tmpfs -o size=1G tmpfs /mnt/tmp
+```
+
+ If full → system crashes (RAM exhausted)
+
+---
+
+##  `squashfs`
+
+* Compressed read-only filesystem
+* Used in Snap packages
+
+---
+
+##  `overlay`
+
+* Combines multiple directories
+* Used in Docker / containers
+
+---
+
+#  9. Swap space (VERY IMPORTANT)
+
+Swap = **disk used as extra RAM**
+
+---
+
+##  Check swap
+
+```bash
+free -h
+```
+
+---
+
+#  10. Create swap partition
+
+### Step 1: Prepare partition
+
+```bash
+sudo mkswap /dev/sda5
+```
+
+---
+
+### Step 2: Activate it
+
+```bash
+sudo swapon /dev/sda5
+```
+
+---
+
+### Step 3: Add to auto-start
+
+Edit `/etc/fstab`:
+
+```bash
+/dev/sda5 none swap sw 0 0
+```
+
+---
+
+#  11. Create swap file (easier)
+
+```bash
+sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+```
+
+---
+
+## Add to `/etc/fstab`:
+
+```bash
+/swapfile none swap sw 0 0
+```
+
+---
+
+# Disable swap
+
+```bash
+sudo swapoff /swapfile
+```
+
+---
+
+# 📏 12. How much swap do you need?
+
+### Old rule:
+
+2× RAM
+
+### Modern rule:
+
+Depends:
+
+| RAM   | Suggested swap |
+| ----- | -------------- |
+| 4GB   | 2–4GB          |
+| 8GB   | 2–8GB          |
+| 16GB+ | 0–4GB          |
+
+---
+
+##  If no swap
+
+Linux uses:
+ **OOM Killer**
+
+It will kill apps randomly 
+
+
+
 
 
 
