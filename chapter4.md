@@ -1176,9 +1176,38 @@ Think of LVM like this:
 
 > “My disk is liquid — I can reshape it anytime”
 
+-----
+Here I do some practice on my Kali on my VM:
+<img width="849" height="657" alt="image" src="https://github.com/user-attachments/assets/d3e6287a-9f23-4836-b9e7-869323429203" />
+
+here ;
+    -    I created a directory to test on in my home
+    - then created a file disk with size 100M and stored into it zeros
+    - then created it as ext4 disk 
+
+<img width="704" height="175" alt="image" src="https://github.com/user-attachments/assets/75920f44-305b-4aa0-9a41-6fe9e45cac67" />
+
+then I mount it on /mnt/fs_test dir as read write dir
+<img width="455" height="489" alt="image" src="https://github.com/user-attachments/assets/aed9cb7c-f33e-4e7e-8a19-b415ccbcab46" />
+then I got into this dir
+then I did a file inside it and do some write on it using vim
+then I cat it 
+
+<img width="554" height="511" alt="image" src="https://github.com/user-attachments/assets/f37a59f8-1088-48fc-841b-2f064812659f" />
+
+then I list the disks on my vm 
+then I found that the file I was dedicated for loop disk there
+that means : I do the work correctly
+then I do unmount for the disk file 
+and then list the disks again 
+that means -> the process has finished correctly.
+
+there's others tests I will do later like;doing swap files on my vm, LVM....
 
 
 
+
+ 
 
 
 
