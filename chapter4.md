@@ -1,5 +1,6 @@
 - Any Disk like;/dev/sda you have created (it's form look  like this)
-    <img width="476" height="412" alt="image" src="https://github.com/user-attachments/assets/43fb6626-acee-4b32-be0a-baee60388fa3" />
+
+   <img width="476" height="412" alt="image" src="https://github.com/user-attachments/assets/43fb6626-acee-4b32-be0a-baee60388fa3" />
   -The most important thing is : Partition table;
   - Types of Partition table:
     - MBR(msdos) ->master boot record partition table (older type)
